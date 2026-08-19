@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}My Bookings - DriveEasy{% endblock %}
+{% block content %}
+<h1>My Bookings</h1>
+{% if bookings %}
+<table style="width:100%; border-collapse:collapse;">
+    <thead>
+        <tr style="text-align:left; border-bottom:2px solid #e2e5e9;">
+            <th style="padding:0.6rem;">Car</th>
+            <th style="padding:0.6rem;">Dates</th>
+            <th style="padding:0.6rem;">Total</th>
+            <th style="padding:0.6rem;">Status</th>
+            <th style="padding:0.6rem;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr style="border-bottom:1px solid #e2e5e9;">
+            <td style="padding:0.6rem;">{{ booking.car }}</td>
+            <td style="padding:0.6rem;">{{ booking.start_date }} &rarr; {{ booking.end_date }}</td>
+            <td style="padding:0.6rem;">${{ booking.total_cost }}</td>
+            <td style="padding:0.6rem;">{{ booking.get_status_display }}</td>
+            <td style="padding:0.6rem;">
+                {% if booking.status == "pending" %}
+                <form method="post" action="{% url 'bookings:cancel_booking' booking.pk %}">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit">Cancel</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>You haven't booked any cars yet. <a href="{% url 'cars:car_list' %}">Browse available cars</a>.</p>
+{% endif %}
+{% endblock %}

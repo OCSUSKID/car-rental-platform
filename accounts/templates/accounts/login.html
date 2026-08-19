@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Login - DriveEasy{% endblock %}
+{% block content %}
+<h1>Log in</h1>
+<form method="post" style="max-width:360px; display:flex; flex-direction:column; gap:0.8rem;">
+    {% csrf_token %}
+    {% for field in form %}
+        <div>
+            <label>{{ field.label }}</label><br>
+            {{ field }}
+            {% if field.errors %}<p style="color:#d9534f; font-size:0.85rem;">{{ field.errors }}</p>{% endif %}
+        </div>
+    {% endfor %}
+    <button class="btn" type="submit">Log In</button>
+</form>
+<p>New here? <a href="{% url 'accounts:signup' %}">Create an account</a></p>
+{% endblock %}
