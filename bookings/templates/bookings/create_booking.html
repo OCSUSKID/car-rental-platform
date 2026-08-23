@@ -6,6 +6,7 @@
 
 <form method="post" style="max-width:400px; display:flex; flex-direction:column; gap:0.8rem;">
     {% csrf_token %}
+    {{ form.non_field_errors }}
     {% for field in form %}
         <div>
             <label>{{ field.label }}</label><br>

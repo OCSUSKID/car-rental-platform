@@ -94,7 +94,10 @@
             {% if user.is_authenticated %}
                 <a href="{% url 'bookings:my_bookings' %}">My Bookings</a>
                 {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
-                <a href="{% url 'accounts:logout' %}">Logout ({{ user.username }})</a>
+                <form method="post" action="{% url 'accounts:logout' %}" style="display:inline; margin-left:1.2rem;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none; border:0; color:#fff; cursor:pointer; font:inherit; opacity:0.9; padding:0;">Logout ({{ user.username }})</button>
+                </form>
             {% else %}
                 <a href="{% url 'accounts:login' %}">Login</a>
                 <a href="{% url 'accounts:signup' %}">Sign Up</a>

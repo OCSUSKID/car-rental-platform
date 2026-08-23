@@ -8,7 +8,7 @@ A simple, functional car rental site built with Django (server-rendered template
 - User signup/login/logout (Django's built-in auth)
 - Logged-in users can book a car for a date range; total cost is auto-calculated
 - "My Bookings" page — view and cancel pending bookings
-- Django admin for managing cars and bookings (superuser: `admin` / `admin12345`)
+- Django admin for managing cars and bookings
 
 ## Project structure
 ```
@@ -35,7 +35,7 @@ Visit http://127.0.0.1:8000/ — admin panel at /admin/.
 ## Deploying to Render
 This project is already production-ready for Render:
 - `requirements.txt` includes gunicorn, whitenoise, dj-database-url, psycopg2-binary
-- `settings.py` reads `SECRET_KEY`, `DEBUG`, and `DATABASE_URL` from environment variables (falls back to local SQLite if unset, so local dev is unaffected)
+- `settings.py` reads `SECRET_KEY`, `DEBUG`, `DATABASE_URL`, host, CSRF, HTTPS, and email settings from environment variables (falls back to local SQLite and a development key only when `DEBUG` is enabled)
 - `Procfile` is set to `web: gunicorn core.wsgi:application`
 
 Steps:
@@ -44,10 +44,11 @@ Steps:
 3. On Render: New + → Web Service → connect the repo.
    - Build command: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
    - Start command: `gunicorn core.wsgi:application`
-   - Environment variables: `DATABASE_URL` (from step 2), `SECRET_KEY` (any long random string), `DEBUG` = `False`
+   - Environment variables: `DATABASE_URL` (from step 2), `SECRET_KEY` (any long random string), `DEBUG` = `False`, and `ALLOWED_HOSTS` if using a custom domain
 4. Deploy. Once live, create an admin user via Render's Shell tab: `python manage.py createsuperuser`
+
+Alternatively, use the included `render.yaml` blueprint. Copy `.env.example` to `.env` for local environment-based configuration; never commit the `.env` file.
 
 ## Notes / where to take this next
 - Add real payment integration (e.g. Paystack/Stripe) at booking confirmation
-- Add date-availability checks so a car can't be double-booked for overlapping dates
 - Add a REST API layer (DRF) if you want a separate frontend (React, mobile app, etc.)

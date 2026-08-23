@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from decimal import Decimal
 from cars.models import Car
 
 
@@ -26,10 +27,20 @@ class Booking(models.Model):
         if self.start_date and self.end_date and self.end_date <= self.start_date:
             raise ValidationError("End date must be after start date.")
 
+        if self.car_id and self.start_date and self.end_date:
+            overlapping = Booking.objects.filter(
+                car_id=self.car_id,
+                start_date__lt=self.end_date,
+                end_date__gt=self.start_date,
+                status__in=[self.Status.PENDING, self.Status.CONFIRMED],
+            ).exclude(pk=self.pk)
+            if overlapping.exists():
+                raise ValidationError("This car is already booked for part of those dates.")
+
     def save(self, *args, **kwargs):
         if self.start_date and self.end_date and self.car_id:
             days = (self.end_date - self.start_date).days
-            self.total_cost = days * self.car.daily_rate
+            self.total_cost = Decimal(days) * Decimal(self.car.daily_rate)
         super().save(*args, **kwargs)
 
     def __str__(self):
