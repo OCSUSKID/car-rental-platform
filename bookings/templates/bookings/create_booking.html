@@ -1,19 +1,27 @@
 {% extends "base.html" %}
 {% block title %}Book {{ car }} - DriveEasy{% endblock %}
 {% block content %}
-<h1>Book: {{ car }}</h1>
-<p>${{ car.daily_rate }}/day &mdash; {{ car.location }}</p>
-
-<form method="post" style="max-width:400px; display:flex; flex-direction:column; gap:0.8rem;">
+<style>
+.booking-shell{max-width:480px; margin:0 auto; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:2rem; box-shadow:var(--shadow);}
+.booking-shell h1{font-size:1.5rem;}
+.booking-sub{color:var(--text-muted); margin-bottom:1.4rem;}
+.booking-shell form{display:flex; flex-direction:column; gap:1.1rem;}
+.field-error{color:var(--danger); font-size:.82rem; margin-top:.3rem;}
+</style>
+<div class="booking-shell">
+  <h1>Book: {{ car }}</h1>
+  <p class="booking-sub">${{ car.daily_rate }}/day &mdash; {{ car.location }}</p>
+  <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
     {% for field in form %}
         <div>
-            <label>{{ field.label }}</label><br>
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
             {{ field }}
-            {% if field.errors %}<p style="color:#d9534f; font-size:0.85rem;">{{ field.errors }}</p>{% endif %}
+            {% if field.errors %}<p class="field-error">{{ field.errors|striptags }}</p>{% endif %}
         </div>
     {% endfor %}
-    <button class="btn" type="submit">Confirm Booking</button>
-</form>
+    <button class="btn btn-block" type="submit">Confirm Booking</button>
+  </form>
+</div>
 {% endblock %}

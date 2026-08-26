@@ -1,9 +1,35 @@
 {% extends "base.html" %}
 {% block title %}Browse Cars - DriveEasy{% endblock %}
 {% block content %}
-<h1>Find your next ride</h1>
+<style>
+.page-head{margin-bottom:1.6rem;}
+.page-head h1{font-size:1.9rem;}
+.page-head p{color:var(--text-muted); margin:0;}
+.filter-bar{
+  display:flex; gap:.7rem; flex-wrap:wrap; margin-bottom:1.8rem;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1rem;
+}
+.filter-bar input, .filter-bar select{flex:1; min-width:150px;}
+.filter-bar .btn{flex:none;}
+.car-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1.3rem;}
+.car-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; transition:box-shadow .15s ease, transform .15s ease;}
+.car-card:hover{box-shadow:var(--shadow); transform:translateY(-2px);}
+.car-thumb{width:100%; height:170px; object-fit:cover; display:block;}
+.car-thumb-placeholder{width:100%; height:170px; background:#eef1f4; display:flex; align-items:center; justify-content:center; color:#9aa2ad;}
+.car-card-body{padding:1.1rem;}
+.car-card-body h3{margin:0 0 .3rem; font-size:1.05rem;}
+.car-meta{margin:0 0 .6rem; color:var(--text-muted); font-size:.86rem;}
+.car-price{margin:0 0 .9rem; font-weight:700; font-family:'Space Grotesk',sans-serif; color:var(--navy);}
+.empty-state{grid-column:1/-1; text-align:center; padding:3rem 1rem; color:var(--text-muted);}
+@media (max-width:600px){.filter-bar{flex-direction:column;} .filter-bar input, .filter-bar select, .filter-bar .btn{width:100%;}}
+</style>
 
-<form method="get" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+<div class="page-head">
+  <h1>Find your next ride</h1>
+  <p>Browse the fleet and filter by make, category, or location.</p>
+</div>
+
+<form method="get" class="filter-bar">
     <input type="text" name="q" placeholder="Make or model" value="{{ search_query }}">
     <input type="text" name="location" placeholder="Location" value="{{ location_query }}">
     <select name="category">
@@ -15,23 +41,23 @@
     <button class="btn" type="submit">Search</button>
 </form>
 
-<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1.2rem;">
+<div class="car-grid">
     {% for car in cars %}
-    <div style="background:#fff; border:1px solid #e2e5e9; border-radius:10px; overflow:hidden;">
+    <div class="car-card">
         {% if car.image %}
-            <img src="{{ car.image.url }}" alt="{{ car }}" style="width:100%; height:160px; object-fit:cover;">
+            <img class="car-thumb" src="{{ car.image.url }}" alt="{{ car }}">
         {% else %}
-            <div style="width:100%; height:160px; background:#eef1f4; display:flex; align-items:center; justify-content:center; color:#999;">No image</div>
+            <div class="car-thumb-placeholder">No image</div>
         {% endif %}
-        <div style="padding:1rem;">
-            <h3 style="margin:0 0 0.3rem;">{{ car.year }} {{ car.make }} {{ car.model }}</h3>
-            <p style="margin:0 0 0.5rem; color:#666; font-size:0.9rem;">{{ car.get_category_display }} &middot; {{ car.seats }} seats &middot; {{ car.get_transmission_display }}</p>
-            <p style="margin:0 0 0.8rem; font-weight:600;">${{ car.daily_rate }}/day &mdash; {{ car.location }}</p>
-            <a class="btn" href="{% url 'cars:car_detail' car.pk %}">View details</a>
+        <div class="car-card-body">
+            <h3>{{ car.year }} {{ car.make }} {{ car.model }}</h3>
+            <p class="car-meta">{{ car.get_category_display }} &middot; {{ car.seats }} seats &middot; {{ car.get_transmission_display }}</p>
+            <p class="car-price">${{ car.daily_rate }}/day &mdash; {{ car.location }}</p>
+            <a class="btn btn-block" href="{% url 'cars:car_detail' car.pk %}">View details</a>
         </div>
     </div>
     {% empty %}
-        <p>No cars match your search right now.</p>
+        <div class="empty-state">No cars match your search right now. Try adjusting your filters.</div>
     {% endfor %}
 </div>
 {% endblock %}
